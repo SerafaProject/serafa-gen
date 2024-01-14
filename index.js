@@ -1,26 +1,6 @@
 #!/usr/bin/env node
-import Yargs from 'yargs'
 import Inquirer from 'inquirer'
 import fs from 'fs'
-
-const filesStructure = [
-  'serafa-gen',
-  'serafa-gen/application',
-  'serafa-gen/middlewares'
-];
-// Itera sobre a estrutura de pastas e cria cada uma delas
-filesStructure.forEach(pasta => {
-  const caminhoPasta = pasta
-
-  // Verifica se a pasta já existe
-  if (!fs.existsSync(caminhoPasta)) {
-    // Cria a pasta
-    fs.mkdirSync(caminhoPasta);
-    console.log(`Pasta '${pasta}' criada com sucesso.`);
-  } else {
-    console.log(`A pasta '${pasta}' já existe.`);
-  }
-});
 
 const args = process.argv.slice(2);
 
@@ -31,7 +11,7 @@ if (args.length === 0) {
 
 const command = args[0];
 
-const genOption = [
+const createOptions = [
   'Project',
   'Package',
   'Model',
@@ -39,18 +19,13 @@ const genOption = [
   'Controller',
 ];
 
-const steps = [
-
-];
-
 console.log(process.argv0)
 if (command === 'create') {
-
   Inquirer.prompt({
     type: 'list',
     name: 'value',
     message: 'Escolha uma opção:',
-    choices: genOption,
+    choices: createOptions,
   },)
     .then(genOptionAnswer => {
       console.log(`You chose: ${genOptionAnswer.value}`);
@@ -66,6 +41,31 @@ if (command === 'create') {
       }
     })
     .catch(error => console.error(error));
+} else if (command === 'init') {
+  Inquirer.prompt({
+    type: "input",
+    name: "projectName",
+    message: "Project name"
+  }).then((projectNameRes) => {
+    console.log(`Project name: ${projectNameRes.projectName}`)
+    const filesStructure = [
+      projectNameRes.projectName,
+      `${projectNameRes.projectName}/application`,
+      `${projectNameRes.projectName}/middlewares`
+    ];
+    // Itera sobre a estrutura de pastas e cria cada uma delas
+    filesStructure.forEach(pasta => {
+      const folderPath = pasta
+      // Verifica se a pasta já existe
+      if (!fs.existsSync(folderPath)) {
+        // Cria a pasta
+        fs.mkdirSync(folderPath);
+      } else {
+        console.log(`The path '${pasta}' already exists.`);
+      }
+    });
+    console.log("Created Successfully")
+  })
 } else {
   console.log("Comando não reconhecido")
 }
